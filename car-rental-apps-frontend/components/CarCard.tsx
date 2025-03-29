@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 
 type CarProps = {
   id: string;
@@ -10,9 +9,10 @@ type CarProps = {
   imageUrl: string;
   seats: number;
   fuel: string;
+  onBookNow: () => void;  // Fixing function signature
 };
 
-const CarCard: React.FC<CarProps> = ({ id, name, pricePerDay, imageUrl, seats, fuel }) => {
+const CarCard: React.FC<CarProps> = ({ id, name, pricePerDay, imageUrl, seats, fuel, onBookNow }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
       <Image
@@ -29,12 +29,12 @@ const CarCard: React.FC<CarProps> = ({ id, name, pricePerDay, imageUrl, seats, f
           <span>🪑 {seats} seats</span>
           <span>⛽ {fuel}</span>
         </div>
-        <Link
-          href={`/car/${id}`}
-          className="block mt-4 text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        <button
+          className="block mt-4 text-center bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 w-full"
+          onClick={onBookNow}  // Removed unnecessary arguments
         >
-          View Details
-        </Link>
+          Book Now
+        </button>
       </div>
     </div>
   );

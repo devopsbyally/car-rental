@@ -7,47 +7,60 @@ const SearchFilter = ({ onFilter }) => {
   const [manufacturer, setManufacturer] = useState('');
 
   const handleSearch = () => {
-    // Calling the onFilter function with the selected filters
+    console.log('Filtering with:', { sortBy, manufacturer });
     onFilter({ sortBy, manufacturer });
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-4 p-6 bg-white shadow-xl rounded-lg border border-gray-300">
-      {/* Sort By Dropdown */}
-      <div className="w-full md:w-auto">
-        <select
-          className="select select-bordered text-gray-900 font-semibold w-full md:w-48"
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option disabled selected>Price</option>
-          <option value="lowToHigh">Low to High</option>
-          <option value="highToLow">High to Low</option>
-        </select>
-      </div>
+    <div className="flex flex-col items-center gap-6 p-6 bg-gradient-to-r from-blue-500 to-purple-600 shadow-xl rounded-2xl border border-gray-300">
+      {/* Heading */}
+      <h3 className="text-xl font-bold text-white mb-2 tracking-wide">
+        Find Your Perfect Car 🚗
+      </h3>
 
-      {/* Manufacturer Dropdown */}
-      <div className="w-full md:w-auto">
-        <select
-          className="select select-bordered text-gray-900 font-semibold w-full md:w-48"
-          onChange={(e) => setManufacturer(e.target.value)}
-        >
-          <option value="">Manufacturers</option>
-          <option value="BMW">BMW</option>
-          <option value="Kia">Kia</option>
-          <option value="Tesla">Tesla</option>
-          <option value="Mercedes">Mercedes</option>
-          <option value="Audi">Audi</option>
-          <option value="Genesis">Genesis</option>
-        </select>
-      </div>
+      {/* Filter Options */}
+      <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+        {/* Sort By Dropdown */}
+        <div className="relative w-full md:w-52">
+          <select
+            className="px-4 py-3 text-gray-900 font-semibold w-full bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-yellow-400 hover:border-yellow-500 transition-all duration-300"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="">Price</option>
+            <option value="lowToHigh">Low to High</option>
+            <option value="highToLow">High to Low</option>
+          </select>
+        </div>
 
-      {/* Search Button */}
-      <button
-        className="btn bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg shadow-md transition duration-300"
-        onClick={handleSearch}
-      >
-        Search
-      </button>
+        {/* Manufacturer Dropdown */}
+        <div className="relative w-full md:w-52">
+          <select
+            className="px-4 py-3 text-gray-900 font-semibold w-full bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400 hover:border-green-500 transition-all duration-300"
+            value={manufacturer}
+            onChange={(e) => setManufacturer(e.target.value)}
+          >
+            <option value="">Manufacturer</option>
+            <option value="BMW">BMW</option>
+            <option value="Kia">Kia</option>
+            <option value="Tesla">Tesla</option>
+            <option value="Mercedes">Mercedes</option>
+            <option value="Audi">Audi</option>
+            <option value="Genesis">Genesis</option>
+            <option value="Hyundai">Hyundai</option>
+            <option value="Nissan">Nissan</option>
+            <option value="Lexus">Lexus</option>
+          </select>
+        </div>
+
+        {/* Search Button */}
+        <button
+          className="px-6 py-3 font-bold text-white bg-gradient-to-r from-green-400 to-blue-500 rounded-lg shadow-md hover:from-blue-500 hover:to-green-400 transition-all duration-300 transform hover:scale-105"
+          onClick={handleSearch}
+        >
+          🔍 Search
+        </button>
+      </div>
     </div>
   );
 };
