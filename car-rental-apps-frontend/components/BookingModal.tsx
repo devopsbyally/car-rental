@@ -1,4 +1,5 @@
 'use client';
+
 import axios from 'axios';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -15,6 +16,7 @@ type BookingModalProps = {
   };
   onClose: () => void;
   onConfirm: () => void;
+  isOpen: boolean;
 };
 
 const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'];
@@ -26,10 +28,10 @@ const cityLocations: { [key: string]: string[] } = {
   'Miami': ['South Beach', 'Wynwood Walls', 'Downtown Miami', 'Miami International Airport'],
 };
 
-const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
+const BookingModal = ({ car, onClose, onConfirm, isOpen }: BookingModalProps) => {
   const [formData, setFormData] = useState({
-    pickupLocation: '',
     city: '',
+    pickupLocation: '',
     pickupDate: '',
     dropoffDate: '',
     pickupTime: '',
@@ -55,7 +57,14 @@ const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
     }
 
     try {
-      const payload = { ...formData, carId: car.id };
+      const payload = {
+        ...formData,
+        carId: car.id,
+        carName: car.name,          // Add car name
+        carManufacturer: car.manufacturer,  // Add manufacturer if available
+      };
+
+      // Update the API URL below based on your actual backend endpoint
       const response = await axios.post('/api/bookings', payload);
 
       if (response.status === 201) {
@@ -69,7 +78,7 @@ const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
     }
   };
 
-  return (
+  return isOpen ? (
     <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 bg-opacity-90 z-50 p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full p-6 relative flex flex-col md:flex-row gap-6 shadow-2xl transform scale-105 transition-all duration-300">
         <button onClick={onClose} className="absolute top-3 right-3 text-gray-700 hover:text-black">
@@ -94,32 +103,38 @@ const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
             {/* City */}
             <div>
               <label className="font-semibold text-gray-800">City</label>
-              <select 
-                name="city" 
-                value={formData.city} 
-                onChange={handleChange} 
-                className="select select-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black" 
+              <select
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                className="select select-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black"
                 required
               >
                 <option value="">Select City</option>
-                {cities.map(city => <option key={city} value={city}>{city}</option>)}
+                {cities.map(city => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* Pickup Location */}
             <div>
               <label className="font-semibold text-gray-800">Pickup Location</label>
-              <select 
-                name="pickupLocation" 
-                value={formData.pickupLocation} 
-                onChange={handleChange} 
-                disabled={!formData.city} 
-                className="select select-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black" // Add text-black class
+              <select
+                name="pickupLocation"
+                value={formData.pickupLocation}
+                onChange={handleChange}
+                disabled={!formData.city}
+                className="select select-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black"
                 required
               >
                 <option value="">Select Pickup Location</option>
                 {formData.city && cityLocations[formData.city]?.map(location => (
-                  <option key={location} value={location}>{location}</option>
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
                 ))}
               </select>
             </div>
@@ -128,24 +143,24 @@ const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="font-semibold text-gray-800">Pickup Date</label>
-                <input 
-                  type="date" 
-                  name="pickupDate" 
-                  value={formData.pickupDate} 
-                  onChange={handleChange} 
-                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black" // Add text-black class
-                  required 
+                <input
+                  type="date"
+                  name="pickupDate"
+                  value={formData.pickupDate}
+                  onChange={handleChange}
+                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black"
+                  required
                 />
               </div>
               <div>
                 <label className="font-semibold text-gray-800">Drop-off Date</label>
-                <input 
-                  type="date" 
-                  name="dropoffDate" 
-                  value={formData.dropoffDate} 
-                  onChange={handleChange} 
-                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black" // Add text-black class
-                  required 
+                <input
+                  type="date"
+                  name="dropoffDate"
+                  value={formData.dropoffDate}
+                  onChange={handleChange}
+                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black"
+                  required
                 />
               </div>
             </div>
@@ -154,24 +169,24 @@ const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="font-semibold text-gray-800">Pickup Time</label>
-                <input 
-                  type="time" 
-                  name="pickupTime" 
-                  value={formData.pickupTime} 
-                  onChange={handleChange} 
-                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black" // Add text-black class
-                  required 
+                <input
+                  type="time"
+                  name="pickupTime"
+                  value={formData.pickupTime}
+                  onChange={handleChange}
+                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black"
+                  required
                 />
               </div>
               <div>
                 <label className="font-semibold text-gray-800">Drop-off Time</label>
-                <input 
-                  type="time" 
-                  name="dropoffTime" 
-                  value={formData.dropoffTime} 
-                  onChange={handleChange} 
-                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black" // Add text-black class
-                  required 
+                <input
+                  type="time"
+                  name="dropoffTime"
+                  value={formData.dropoffTime}
+                  onChange={handleChange}
+                  className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black"
+                  required
                 />
               </div>
             </div>
@@ -179,20 +194,20 @@ const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
             {/* Contact Number */}
             <div>
               <label className="font-semibold text-gray-800">Contact Number</label>
-              <input 
-                type="tel" 
-                name="contactNumber" 
-                value={formData.contactNumber} 
-                onChange={handleChange} 
-                placeholder="e.g., +1 123 456 7890" 
-                className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black" // Add text-black class
-                required 
+              <input
+                type="tel"
+                name="contactNumber"
+                value={formData.contactNumber}
+                onChange={handleChange}
+                placeholder="e.g., +1 123 456 7890"
+                className="input input-bordered border-2 border-gray-400 focus:border-blue-600 w-full text-black"
+                required
               />
             </div>
 
             {/* Confirm Booking Button */}
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn w-full font-bold text-white bg-blue-600 hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 py-3 rounded-md"
             >
               Confirm Booking
@@ -201,7 +216,7 @@ const BookingModal = ({ car, onClose, onConfirm }: BookingModalProps) => {
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default BookingModal;

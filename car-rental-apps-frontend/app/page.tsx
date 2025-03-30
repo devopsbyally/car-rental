@@ -47,6 +47,13 @@ const Home = () => {
     setIsBookingOpen(false);
   };
 
+  // Handle the booking confirmation
+  const handleBookingConfirmation = () => {
+    alert('Booking confirmed!');
+    closeBookingModal();
+    // Additional logic like resetting form or showing a success message can go here.
+  };
+
   return (
     <div>
       <NavBar />
@@ -80,15 +87,21 @@ const Home = () => {
                 imageUrl={car.imageUrl}
                 seats={car.seats}
                 fuel={car.fuel}
-                onBookNow={() => openBookingModal(car)}
+                onBookNow={() => openBookingModal(car)} // Open booking modal
               />
             ))}
           </div>
         </section>
       </main>
       
+      {/* Only show the BookingModal if a car is selected */}
       {selectedCar && (
-        <BookingModal isOpen={isBookingOpen} onClose={closeBookingModal} car={selectedCar} />
+        <BookingModal 
+          isOpen={isBookingOpen} 
+          onClose={closeBookingModal} 
+          car={selectedCar} 
+          onConfirm={handleBookingConfirmation}  // Pass the booking confirmation handler
+        />
       )}
     </div>
   );
