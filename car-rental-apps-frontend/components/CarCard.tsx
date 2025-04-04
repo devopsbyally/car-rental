@@ -6,7 +6,7 @@ type CarProps = {
   id: string;
   name: string;
   pricePerDay: number;
-  imageUrl: string;
+  imageUrl: string | StaticImageData;  // Updated to accept both string and StaticImageData
   seats: number;
   fuel: string;
   onBookNow: () => void;  // Fixing function signature

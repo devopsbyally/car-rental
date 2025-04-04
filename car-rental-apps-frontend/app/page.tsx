@@ -5,7 +5,7 @@ import Link from 'next/link';
 import NavBar from '../components/NavBar';
 import CarCard from '../components/CarCard';
 import { cars } from '../data/cars';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image'; // Import StaticImageData
 import SearchFilter from '../components/SearchFilter';
 import BookingModal from '../components/BookingModal';
 
