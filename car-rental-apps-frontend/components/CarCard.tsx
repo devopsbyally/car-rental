@@ -6,6 +6,7 @@ type CarProps = {
   id: string;
   name: string;
   pricePerDay: number;
+  manufacturer: string; // ✅ Add this line
   imageUrl: string | StaticImageData;  // Updated to accept both string and StaticImageData
   seats: number;
   fuel: string;

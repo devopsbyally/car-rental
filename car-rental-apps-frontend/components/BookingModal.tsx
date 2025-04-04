@@ -10,6 +10,7 @@ type BookingModalProps = {
     id: string;
     name: string;
     pricePerDay: number;
+    manufacturer: string; // ✅ Add this line
     imageUrl: string | StaticImageData;  // Allow both string and StaticImageData
     seats: number;
     fuel: string;
