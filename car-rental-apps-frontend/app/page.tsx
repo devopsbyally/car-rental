@@ -38,10 +38,11 @@ const Home = () => {
   };
   
 
-  const openBookingModal = (car) => {
+  const openBookingModal = (car: any) => {
     setSelectedCar(car);
     setIsBookingOpen(true);
   };
+  
 
   const closeBookingModal = () => {
     setSelectedCar(null);
