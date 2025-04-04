@@ -33,9 +33,10 @@ const Home = () => {
     setFilteredCars(updatedCars);
   }, [filters]);
 
-  const handleFilter = ({ sortBy, manufacturer }) => {
+  const handleFilter = ({ sortBy, manufacturer }: { sortBy: string; manufacturer: string }) => {
     setFilters({ sortBy, manufacturer });
   };
+  
 
   const openBookingModal = (car) => {
     setSelectedCar(car);
