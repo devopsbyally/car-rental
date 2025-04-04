@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { useState } from 'react';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';  // Import StaticImageData for type support
 import { FaTimes } from 'react-icons/fa';
 
 type BookingModalProps = {
@@ -10,7 +10,7 @@ type BookingModalProps = {
     id: string;
     name: string;
     pricePerDay: number;
-    imageUrl: string;
+    imageUrl: string | StaticImageData;  // Allow both string and StaticImageData
     seats: number;
     fuel: string;
   };
