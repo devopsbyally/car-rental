@@ -2,7 +2,12 @@
 
 import React, { useState } from 'react';
 
-const SearchFilter = ({ onFilter }) => {
+// ✅ Add this type definition at the top
+type SearchFilterProps = {
+  onFilter: (filters: { sortBy: string; manufacturer: string }) => void;
+};
+
+const SearchFilter = ({ onFilter }: SearchFilterProps) => {
   const [sortBy, setSortBy] = useState('');
   const [manufacturer, setManufacturer] = useState('');
 
@@ -13,14 +18,11 @@ const SearchFilter = ({ onFilter }) => {
 
   return (
     <div className="flex flex-col items-center gap-6 p-6 bg-gradient-to-r from-blue-500 to-purple-600 shadow-xl rounded-2xl border border-gray-300">
-      {/* Heading */}
       <h3 className="text-xl font-bold text-white mb-2 tracking-wide">
         Find Your Perfect Car 🚗
       </h3>
 
-      {/* Filter Options */}
       <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-        {/* Sort By Dropdown */}
         <div className="relative w-full md:w-52">
           <select
             className="px-4 py-3 text-gray-900 font-semibold w-full bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-yellow-400 hover:border-yellow-500 transition-all duration-300"
@@ -33,7 +35,6 @@ const SearchFilter = ({ onFilter }) => {
           </select>
         </div>
 
-        {/* Manufacturer Dropdown */}
         <div className="relative w-full md:w-52">
           <select
             className="px-4 py-3 text-gray-900 font-semibold w-full bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400 hover:border-green-500 transition-all duration-300"
@@ -53,7 +54,6 @@ const SearchFilter = ({ onFilter }) => {
           </select>
         </div>
 
-        {/* Search Button */}
         <button
           className="px-6 py-3 font-bold text-white bg-gradient-to-r from-green-400 to-blue-500 rounded-lg shadow-md hover:from-blue-500 hover:to-green-400 transition-all duration-300 transform hover:scale-105"
           onClick={handleSearch}
