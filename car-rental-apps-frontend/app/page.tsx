@@ -9,9 +9,19 @@ import Image from 'next/image';
 import SearchFilter from '../components/SearchFilter';
 import BookingModal from '../components/BookingModal';
 
+// Define the type for a car
+type Car = {
+  id: string;
+  name: string;
+  pricePerDay: number;
+  imageUrl: string | StaticImageData; // Adjusted to accept both string and StaticImageData
+  seats: number;
+  fuel: string;
+};
+
 const Home = () => {
-  const [filteredCars, setFilteredCars] = useState(cars);
-  const [selectedCar, setSelectedCar] = useState(null);
+  const [filteredCars, setFilteredCars] = useState<Car[]>(cars); // Added type for filteredCars
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null); // Type for selectedCar
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [filters, setFilters] = useState({ sortBy: '', manufacturer: '' });
 
@@ -36,24 +46,20 @@ const Home = () => {
   const handleFilter = ({ sortBy, manufacturer }: { sortBy: string; manufacturer: string }) => {
     setFilters({ sortBy, manufacturer });
   };
-  
 
-  const openBookingModal = (car: any) => {
+  const openBookingModal = (car: Car) => {
     setSelectedCar(car);
     setIsBookingOpen(true);
   };
-  
 
   const closeBookingModal = () => {
     setSelectedCar(null);
     setIsBookingOpen(false);
   };
 
-  // Handle the booking confirmation
   const handleBookingConfirmation = () => {
     alert('Booking confirmed!');
     closeBookingModal();
-    // Additional logic like resetting form or showing a success message can go here.
   };
 
   return (
@@ -96,7 +102,6 @@ const Home = () => {
         </section>
       </main>
       
-      {/* Only show the BookingModal if a car is selected */}
       {selectedCar && (
         <BookingModal 
           isOpen={isBookingOpen} 
