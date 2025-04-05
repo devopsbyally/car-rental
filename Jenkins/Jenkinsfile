@@ -1,0 +1,151 @@
+pipeline {
+    agent { label 'ecs-agent' } 
+
+    environment {
+        SONAR_HOST_URL = "http://3.19.57.33/:9000/"
+        SONAR_TOKEN = credentials('jenkins-sonar') // Put your token in Jenkins credentials
+     //   AWS_ACCOUNT_ID = "676206914267"
+     //   AWS_REGION = "us-east-1"
+     //   FRONTEND_ECR_REPOSITORY = "techcloud-academy-frontend-apps"
+     //   BACKEND_ECR_REPOSITORY = "techcloud-academy-backend-apps"
+    }
+
+    stages {
+
+        stage('Install Frontend Dependencies') {
+            steps {
+                dir('car-rental-apps-frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis (Frontend)') {
+            steps {
+                dir('car-rental-apps-frontend') {
+                    script {
+                        def scannerHome = tool 'SonarQubeScanner'
+                        withSonarQubeEnv('SonarQube') {
+                            sh """
+                                ${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.login=${SONAR_TOKEN}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Install Backend Dependencies') {
+            steps {
+                dir('car-rental-apps-backend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis (Backend)') {
+            steps {
+                dir('car-rental-apps-backend') {
+                    script {
+                        def scannerHome = tool 'SonarQubeScanner'
+                        withSonarQubeEnv('SonarQube') {
+                            sh """
+                                ${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.login=${SONAR_TOKEN}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 5, unit: 'MINUTES') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Quality Gate failed: ${qg.status}"
+                        }
+                    }
+                }
+            }
+        }
+        /*
+        stage('Trivy Filesystem Scan') {
+            steps {
+                script {
+                    // Scan frontend (check node_modules)
+                    dir('car-rental-app-frontend') {
+                        sh """
+                        trivy --version
+                        trivy fs . \
+                          --severity HIGH,CRITICAL \
+                            --exit-code 1 \
+                            
+                        """
+                    }
+                    // Scan backend
+                    dir('car-rental-apps-backend') {
+                        sh """
+                            trivy fs . \
+                            --severity HIGH,CRITICAL \
+                            --exit-code 1 \
+                            
+                        """
+                    }
+                }
+            }
+        }
+        stage('Docker Build & Push to ECR') {
+            steps {
+                script {
+                // ✅ Declare COMMIT_ID with 'def' to avoid memory leak warning
+                    def COMMIT_ID = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+                    env.IMAGE_TAG = COMMIT_ID  
+
+                    // Authenticate with AWS ECR
+                    sh """
+                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com
+                    """
+
+                    // Build and push frontend image
+                    dir('car-rental-app-frontend') {
+                        sh """
+                            docker build -t ${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} .
+                            docker tag ${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG}
+                            docker push ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} 
+                            """
+                    }
+
+                    // Build and push backend image
+                    dir('car-rental-apps-backend') {
+                        sh """
+                            docker build -t ${env.BACKEND_ECR_REPOSITORY}:${env.IMAGE_TAG} .
+                            docker tag ${env.BACKEND_ECR_REPOSITORY}:${env.IMAGE_TAG} ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.BACKEND_ECR_REPOSITORY}:${env.IMAGE_TAG}
+                            docker push ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.BACKEND_ECR_REPOSITORY}:${env.IMAGE_TAG}
+                        """
+                    }
+                }
+            }
+        }
+        stage('Trivy Image Scan') {
+            steps {
+                script {
+                    // Scan frontend image in ECR
+                    sh """
+                        trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} 
+                    """
+                    
+                    // Scan backend image in ECR
+                    sh """
+                        trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.BACKEND_ECR_REPOSITORY}:${env.IMAGE_TAG}
+                    """
+                }
+            }
+        } */
+    }
+}
