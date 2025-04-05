@@ -14,6 +14,7 @@ type Car = {
   id: string;
   name: string;
   pricePerDay: number;
+  manufacturer: string; // ✅ Add this line
   imageUrl: string | StaticImageData; // Adjusted to accept both string and StaticImageData
   seats: number;
   fuel: string;
@@ -91,6 +92,7 @@ const Home = () => {
                 key={car.id}
                 id={car.id}
                 name={car.name}
+                manufacturer={car.manufacturer}
                 pricePerDay={car.pricePerDay}
                 imageUrl={car.imageUrl}
                 seats={car.seats}

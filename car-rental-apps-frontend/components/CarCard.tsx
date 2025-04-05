@@ -1,11 +1,13 @@
 'use client';
 
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
+
 
 type CarProps = {
   id: string;
   name: string;
   pricePerDay: number;
+  manufacturer: string; // ✅ Add this line
   imageUrl: string | StaticImageData;  // Updated to accept both string and StaticImageData
   seats: number;
   fuel: string;
