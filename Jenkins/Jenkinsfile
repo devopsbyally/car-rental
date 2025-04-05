@@ -24,8 +24,8 @@ pipeline {
             steps {
                 dir('car-rental-apps-frontend') {
                     script {
-                        def scannerHome = tool 'SonarQubeScanner'
-                        withSonarQubeEnv('SonarQube') {
+                        def scannerHome = tool 'sonarqube'
+                        withSonarQubeEnv('sonarqube') {
                             sh """
                                 ${scannerHome}/bin/sonar-scanner \
                                 -Dsonar.host.url=${SONAR_HOST_URL} \
@@ -49,8 +49,8 @@ pipeline {
             steps {
                 dir('car-rental-apps-backend') {
                     script {
-                        def scannerHome = tool 'SonarQubeScanner'
-                        withSonarQubeEnv('SonarQube') {
+                        def scannerHome = tool 'sonarqube'
+                        withSonarQubeEnv('sonarqube') {
                             sh """
                                 ${scannerHome}/bin/sonar-scanner \
                                 -Dsonar.host.url=${SONAR_HOST_URL} \
