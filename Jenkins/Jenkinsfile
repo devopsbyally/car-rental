@@ -4,14 +4,14 @@ pipeline {
     environment {
         SONAR_HOST_URL = "http://3.19.57.33/:9000/"
         SONAR_TOKEN = credentials('jenkins-sonar') // Put your token in Jenkins credentials
-     //   AWS_ACCOUNT_ID = "676206914267"
-     //   AWS_REGION = "us-east-1"
-     //   FRONTEND_ECR_REPOSITORY = "techcloud-academy-frontend-apps"
-     //   BACKEND_ECR_REPOSITORY = "techcloud-academy-backend-apps"
+        AWS_ACCOUNT_ID = "010526277866"
+        AWS_REGION = "us-east-1"  //use your ecr location
+        FRONTEND_ECR_REPOSITORY = "car-rental-frontend"
+        BACKEND_ECR_REPOSITORY = "car-rental-backend"
     }
 
     stages {
-
+/*
         stage('Install Frontend Dependencies') {
             steps {
                 dir('car-rental-apps-frontend') {
@@ -74,12 +74,12 @@ pipeline {
                 }
             }
         }
-        /*
+        */
         stage('Trivy Filesystem Scan') {
             steps {
                 script {
                     // Scan frontend (check node_modules)
-                    dir('car-rental-app-frontend') {
+                    dir('car-rental-apps-frontend') {
                         sh """
                         trivy --version
                         trivy fs . \
@@ -113,7 +113,7 @@ pipeline {
                     """
 
                     // Build and push frontend image
-                    dir('car-rental-app-frontend') {
+                    dir('car-rental-apps-frontend') {
                         sh """
                             docker build -t ${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} .
                             docker tag ${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG}
@@ -146,6 +146,6 @@ pipeline {
                     """
                 }
             }
-        } */
+        } 
     }
 }
