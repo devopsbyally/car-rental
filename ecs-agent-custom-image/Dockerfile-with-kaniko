@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y  \
     git \
     unzip \
     curl \
+    docker.io \ 
     jq \
     nodejs \
     npm \
