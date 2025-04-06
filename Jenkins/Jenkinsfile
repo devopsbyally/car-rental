@@ -107,18 +107,20 @@ pipeline {
                     def COMMIT_ID = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
                     env.IMAGE_TAG = COMMIT_ID  
 
-                    // Authenticate with AWS ECR
-                    sh """
-                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com
-                    """
 
                     // Build and push frontend image
                     dir('car-rental-apps-frontend') {
-                        sh """
-                            docker build -t ${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} .
-                            docker tag ${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG}
-                            docker push ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} 
-                            """
+                sh """
+                pwd
+                ls -lah
+                whoami
+                id
+                ls -ld /kaniko
+                /kaniko/executor \
+                    --context=`pwd`\
+                    --dockerfile `pwd`/Dockerfile \
+                    --destination ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} 
+                """
                     }
 
                     // Build and push backend image
