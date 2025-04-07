@@ -14,7 +14,7 @@ spec:
     spec: 
       containers:
         - name: car-rental-backend-container
-          image: 010526277866.dkr.ecr.us-east-1.amazonaws.com/nodejs-postgres-without-vol:latest
+          image: 010526277866.dkr.ecr.us-east-1.amazonaws.com/car-rental-backend:latest
           ports:
             - containerPort: 4000 #default-port-pgadmin
 
