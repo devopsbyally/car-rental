@@ -14,7 +14,7 @@ spec:
     spec: 
       containers:
         - name: nginx-reverse-proxy-container
-          image: your-nginx-image  # Docker image with Nginx reverse proxy
+          image: 010526277866.dkr.ecr.us-east-1.amazonaws.com/car-rental-frontend-proxy:latest  # Docker image with Nginx reverse proxy
           ports:
             - containerPort: 80  # Exposes port 80 for reverse proxy
           env:
@@ -27,7 +27,7 @@ spec:
               - name: API_BACKEND_PORT
                 value: "4000"
         - name: car-rental-frontend-container
-          image: 
+          image: 010526277866.dkr.ecr.us-east-1.amazonaws.com/car-rental-frontend:latest
           ports:
             - containerPort: 3000 
 ---

@@ -12,7 +12,9 @@ COPY --from=kaniko /kaniko /kaniko
 
 
 # Define environment variables for Kaniko
-ENV DOCKER_CONFIG=/kaniko/.docker
+ENV DOCKER_CONFIG /root/.docker
+# Ensure docker config directory exists for login
+RUN mkdir -p /root/.docker
 
 # openjdk-17-jdk is already installed in base image
 
