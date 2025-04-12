@@ -145,7 +145,7 @@ pipeline {
             }
         }
     }
-*/
+
          stage('Docker Build & Push frontend nginx proxy to ECR with Kaniko') {
     steps {
         script {
@@ -169,7 +169,6 @@ pipeline {
         }
     }
 
-
             stage('Trivy Image Scan') {
             steps {
                 script {
@@ -189,5 +188,26 @@ pipeline {
                 }
             }
         }
+*/
+        stages {
+        stage('Check kubectl Version') {
+            steps {
+                script {
+                    sh 'kubectl version --client'
+                }
+            }
+        }
+
+        stage('Validate EKS Connection') {
+            steps {
+                script {
+                    sh 'aws sts get-caller-identity'
+                    sh 'aws eks update-kubeconfig --region us-east-2 --name eks-cluster-ny'
+                    sh 'kubectl get pods -A'
+                    sh 'kubectl get nodes'
+                }
+            }
+        }
+    }
     }
 }

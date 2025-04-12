@@ -4,4 +4,4 @@ metadata:
   name: rds-postgres-external-service
 spec:
   type: ExternalName
-  externalName: car-rental-rds-instance.cr2a444ug1c4.us-east-2.rds.amazonaws.com #rds-postgress is the rds name
+  externalName: postgres-rds-cars.cr2a444ug1c4.us-east-2.rds.amazonaws.com #rds-postgress is the rds name
