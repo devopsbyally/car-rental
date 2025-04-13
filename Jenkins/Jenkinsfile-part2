@@ -1,0 +1,56 @@
+pipeline {
+    agent { label 'ecs-agent' } 
+
+    environment {
+        SONAR_HOST_URL = "http://3.19.57.33/:9000/"
+        SONAR_TOKEN = credentials('jenkins-sonar') // Put your token in Jenkins credentials
+        AWS_ACCOUNT_ID = "010526277866"
+        AWS_REGION = "us-east-1"  //use your ecr location
+        FRONTEND_ECR_REPOSITORY = "car-rental-frontend"
+        BACKEND_ECR_REPOSITORY = "car-rental-backend"
+        FRONTEND_ECR_NGING_REPOSITORY ="car-rental-frontend-proxy"
+        IMAGE_TAG = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+
+    }
+
+    stages {
+        
+            stage('Trivy Image Scan') {
+            steps {
+                script {
+             // Scan frontend nginx proxy image in ECR
+            sh """
+                trivy image --severity HIGH,CRITICAL --exit-code 0 --ignore-unfixed ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_NGING_REPOSITORY}:${env.IMAGE_TAG}
+            """
+                    // Scan frontend image in ECR
+                    sh """
+                        trivy image --severity HIGH,CRITICAL --exit-code 0 --ignore-unfixed ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} 
+                    """
+                    
+                    // Scan backend image in ECR
+                    sh """
+                        trivy image --severity HIGH,CRITICAL --exit-code 0 --ignore-unfixed ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.BACKEND_ECR_REPOSITORY}:${env.IMAGE_TAG}
+                    """
+                }
+            }
+        }
+    stage('Check kubectl Version') {
+            steps {
+                script {
+                    sh 'kubectl version --client'
+                }
+            }
+        }
+
+        stage('Validate EKS Connection') {
+            steps {
+                script {
+                    sh 'aws sts get-caller-identity'
+                    sh 'aws eks update-kubeconfig --region us-east-2 --name eks-cluster-ny'
+                    sh 'kubectl get pods -A'
+                    sh 'kubectl get nodes'
+                }
+            }
+        }
+    }
+}
