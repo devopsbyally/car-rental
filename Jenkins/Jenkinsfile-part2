@@ -52,5 +52,43 @@ pipeline {
                 }
             }
         }
+
+        stage('EKS Deployement') {
+            steps {
+                script {
+            def COMMIT_ID = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+            dir('aws-eks-kube-manifest') {
+                sh """
+                set -e  # Exit on error
+
+                cat car-rental-backend.yml
+                cat car-rental-frontend.yml
+
+                echo "🔧 Updating image tags in manifests with COMMIT_ID: ${COMMIT_ID}"
+                    sed -i "s|${FRONTEND_ECR_NGING_REPOSITORY}:[a-z0-9]*|${FRONTEND_ECR_NGING_REPOSITORY}:${COMMIT_ID}|g" car-rental-frontend.yml
+                    sed -i "s|${FRONTEND_ECR_REPOSITORY}:[a-z0-9]*|${FRONTEND_ECR_REPOSITORY}:${COMMIT_ID}|g" car-rental-frontend.yml
+                    sed -i "s|${BACKEND_ECR_REPOSITORY}:[a-z0-9]*|${BACKEND_ECR_REPOSITORY}:${COMMIT_ID}|g" car-rental-backend.yml
+               
+                sleep 50
+                cat car-rental-backend.yml
+                cat car-rental-frontend.yml
+                echo "🔑 Setting up kubeconfig"
+                aws sts get-caller-identity
+                aws eks update-kubeconfig --region us-east-2 --name eks-cluster-ny
+
+                echo "🚀 Applying manifests to EKS"
+                kubectl apply -f .
+
+                echo "🕒 Waiting for rollout to complete..."
+                kubectl rollout status deployment/car-rental-frontend 
+                kubectl rollout status deployment/car-rental-backend 
+
+                echo "✅ Rollout completed successfully!"
+                kubectl get pods 
+                """
+            }
+        }
     }
 }
+                }
+            }
