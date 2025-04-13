@@ -9,6 +9,8 @@ pipeline {
         FRONTEND_ECR_REPOSITORY = "car-rental-frontend"
         BACKEND_ECR_REPOSITORY = "car-rental-backend"
         FRONTEND_ECR_NGING_REPOSITORY ="car-rental-frontend-proxy"
+        IMAGE_TAG = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+
     }
 
     stages {
@@ -101,13 +103,10 @@ pipeline {
                 }
             }
         }
-
-        stage('Docker Build & Push Backend to ECR with Kaniko') {
+*/
+        stage('Docker Build & Push Backend, Frontend and Proxy to ECR with Kaniko') {
     steps {
-        script {
-            // ✅ Generate a 7-character commit hash as IMAGE_TAG
-            def COMMIT_ID = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
-            env.IMAGE_TAG = COMMIT_ID  
+        script { 
             // ✅ Build & Push Backend Image using Kaniko
                 sh """
                 mkdir -p /root/.docker
@@ -118,52 +117,21 @@ pipeline {
                    --context=${env.WORKSPACE}/car-rental-apps-backend \
                     --dockerfile=${env.WORKSPACE}/car-rental-apps-backend/Dockerfile \
                     --destination ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.BACKEND_ECR_REPOSITORY}:${env.IMAGE_TAG} 
-                """
-            }
-        }
-    }
-
-     stage('Docker Build & Push frontend to ECR with Kaniko') {
-    steps {
-        script {
-            // ✅ Generate a 7-character commit hash as IMAGE_TAG
-            def COMMIT_ID = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
-            env.IMAGE_TAG = COMMIT_ID  
-            // ✅ Build & Push Frontend Image using Kaniko
-                sh """
-                mkdir -p /root/.docker
-                aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com
-                cp /root/.docker/config.json /kaniko/.docker/config.json
-                 echo "🔧 Building Frontend Image..."
+                echo "🔧 Building Frontend Image..."
                 /kaniko/executor \
                 --context=${env.WORKSPACE}/car-rental-apps-frontend \
                 --dockerfile=${env.WORKSPACE}/car-rental-apps-frontend/Dockerfile \
                     --destination ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_REPOSITORY}:${env.IMAGE_TAG} \
                     --verbosity=debug \
                     --log-format=text 
-                """
-            }
-        }
-    }
-
-         stage('Docker Build & Push frontend nginx proxy to ECR with Kaniko') {
-    steps {
-        script {
-            // ✅ Generate a 7-character commit hash as IMAGE_TAG
-            def COMMIT_ID = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
-            env.IMAGE_TAG = COMMIT_ID  
-            // ✅ Build & Push Frontend Image using Kaniko
-                sh """
-                mkdir -p /root/.docker
-                aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com
-                cp /root/.docker/config.json /kaniko/.docker/config.json
-                 echo "🔧 Building Nginx proxy Image..."
+                echo "🔧 Building Nginx proxy Image..."
                 /kaniko/executor \
                 --context=${env.WORKSPACE}/car-rental-apps-frontend \
                 --dockerfile=${env.WORKSPACE}/car-rental-apps-frontend/Dockerfile-nginx \
                     --destination ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.FRONTEND_ECR_NGING_REPOSITORY}:${env.IMAGE_TAG} \
                     --verbosity=debug \
                     --log-format=text 
+                echo "Image Build Stage Finished!"
                 """
             }
         }
@@ -188,7 +156,7 @@ pipeline {
                 }
             }
         }
-*/
+
         stage('Check kubectl Version') {
             steps {
                 script {
